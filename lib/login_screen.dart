@@ -1,21 +1,36 @@
 import 'package:flutter/material.dart';
 import 'server.dart';
+import 'home_screen.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginScreen extends StatefulWidget {
   @override
   _LoginState createState() => _LoginState();
 }
 
-class _LoginState extends State<LoginPage> {
+class _LoginState extends State<LoginScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _serverController = TextEditingController();
   final _usernameFocus = FocusNode();
   final _passwordFocus = FocusNode();
   final _serverFocus = FocusNode();
+  var _loginResult = "";
 
   _tryLogin() async {
-    print(await ServerConnection.isAuthenticated(_usernameController.text, _passwordController.text, _serverController.text));
+    try {
+      var result = await ServerConnection.isAuthenticated(_usernameController.text, _passwordController.text, _serverController.text);
+      if(result) {
+        setState(() {_loginResult = "";});
+        Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+      }
+      else {
+        setState(() {_loginResult = "Invalid credentials";});
+      }
+    } catch(err) {
+      setState(() {_loginResult = "Error authenticating with server";});
+    }
   }
 
   _fieldFocusChange(BuildContext context, FocusNode currentFocus,FocusNode nextFocus) {
@@ -34,9 +49,7 @@ class _LoginState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: Text("Tak")
-      ),
+      appBar: AppBar(title: Text("Login To Server")),
       body: ScrollConfiguration(
           behavior: NoScrollGlowBehavior(),
           child: ListView(
@@ -103,6 +116,13 @@ class _LoginState extends State<LoginPage> {
                   ],
                 ),
               ),
+              Container(
+                padding: EdgeInsets.fromLTRB(20, 10, 20, 0),
+                child: Text(
+                  _loginResult,
+                  style: TextStyle(color: Colors.red),
+                )
+              )
             ],
           )
       ),
