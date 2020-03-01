@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'login_widget.dart';
 
 void main() => runApp(MyApp());
 
@@ -7,69 +8,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Tak',
       theme: ThemeData(
         primaryColor: Colors.brown,
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text("Tak")
-        ),
-        body: ScrollConfiguration(
-          behavior: NoScrollGlowBehavior(),
-          child: ListView(
-            children: <Widget>[
-              Image(image: AssetImage("images/tak.jpg"),),
-              Container(
-                padding: EdgeInsets.all(20.0),
-                child: TextField(
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Username',
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
-                child: TextField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Password',
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    FlatButton(
-                      color: Colors.grey[300],
-                      onPressed: () {},
-                      child: Text("Login"),
-                    ),
-                    FlatButton(
-                      color: Colors.grey[300],
-                      onPressed: () {},
-                      child: Text("Register"),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          )
-        ),
-      ),
+      home: LoginPage(),
     );
   }
 }
-
-class NoScrollGlowBehavior extends ScrollBehavior {
-  @override
-  Widget buildViewportChrome(
-      BuildContext context, Widget child, AxisDirection axisDirection) {
-    return child;
-  }
-}
-
