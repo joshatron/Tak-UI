@@ -10,7 +10,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginState extends State<LoginScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _serverController = TextEditingController();
+  final _serverController = TextEditingController(text: "https://");
   final _usernameFocus = FocusNode();
   final _passwordFocus = FocusNode();
   final _serverFocus = FocusNode();
@@ -22,18 +22,37 @@ class _LoginState extends State<LoginScreen> {
       if(result) {
         setState(() {_loginResult = "";});
         Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
+          MaterialPageRoute(builder: (context) => HomeScreen(ServerConnection(_usernameController.text, _passwordController.text, _serverController.text))),
         );
       }
       else {
         setState(() {_loginResult = "Invalid credentials";});
       }
     } catch(err) {
-      setState(() {_loginResult = "Error authenticating with server";});
+      setState(() {_loginResult = "Error conneting with server";});
     }
   }
 
-  _fieldFocusChange(BuildContext context, FocusNode currentFocus,FocusNode nextFocus) {
+  _tryRegister() async {
+    try {
+      var connection = ServerConnection(_usernameController.text, _passwordController.text, _serverController.text);
+      var result = await connection.register();
+
+      if(result) {
+        setState(() {_loginResult = "";});
+        Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => HomeScreen(connection)),
+        );
+      }
+      else {
+        setState(() {_loginResult = "Username taken";});
+      }
+    } catch(err) {
+      setState(() {_loginResult = "Error connecting to server";});
+    }
+  }
+
+  _fieldFocusChange(BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
     currentFocus.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);
   }
@@ -62,7 +81,8 @@ class _LoginState extends State<LoginScreen> {
                   focusNode: _usernameFocus,
                   textInputAction: TextInputAction.next,
                   onEditingComplete: () {
-                    _fieldFocusChange(context, _usernameFocus, _passwordFocus);
+                    _fieldFocusChange(
+                        context, _usernameFocus, _passwordFocus);
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
@@ -105,23 +125,27 @@ class _LoginState extends State<LoginScreen> {
                   children: <Widget>[
                     FlatButton(
                       color: Colors.grey[300],
-                      onPressed: () {_tryLogin();},
+                      onPressed: () {
+                        _tryLogin();
+                      },
                       child: Text("Login"),
                     ),
                     FlatButton(
                       color: Colors.grey[300],
-                      onPressed: () {},
+                      onPressed: () {
+                        _tryRegister();
+                      },
                       child: Text("Register"),
                     ),
                   ],
                 ),
               ),
               Container(
-                padding: EdgeInsets.fromLTRB(20, 10, 20, 0),
-                child: Text(
-                  _loginResult,
-                  style: TextStyle(color: Colors.red),
-                )
+                  padding: EdgeInsets.fromLTRB(20, 10, 20, 0),
+                  child: Text(
+                    _loginResult,
+                    style: TextStyle(color: Colors.red),
+                  )
               )
             ],
           )
