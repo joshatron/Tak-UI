@@ -14,46 +14,46 @@ class ServerConnection {
 
   ServerConnection(this._username, this._password, this._server);
 
-  static String _getAuth(String username, String password) {
-    var bytes = utf8.encode('$username:$password');
+  String getAuth() {
+    var bytes = utf8.encode('$_username:$_password');
     return 'Basic ' + base64.encode(bytes);
   }
 
-  static http.IOClient getHttp() {
-    return http.IOClient(new HttpClient()..badCertificateCallback = (cert, host, port) => true);
+  static http.IOClient getClient() {
+    return http.IOClient(
+        new HttpClient()..badCertificateCallback = (cert, host, port) => true);
   }
+}
 
-  static Future<bool> isAuthenticated(String username, String password, String server) async {
-    final response = await getHttp().get(
-      '$server/account/authenticate',
-      headers: {HttpHeaders.authorizationHeader: _getAuth(username, password)},
-    );
-    print(response);
+Future<bool> isAuthenticated(ServerConnection conn) async {
+  final response = await ServerConnection.getClient().get(
+    conn.server + '/account/authenticate',
+    headers: {HttpHeaders.authorizationHeader: conn.getAuth()},
+  );
 
-    if(response.statusCode == 204) {
-      return true;
-    }
-    else if(response.statusCode == 401) {
-      return false;
-    }
-    throw Exception("Server returned an error");
+  if(response.statusCode == 204) {
+    return true;
   }
-
-  Future<bool> register() async {
-    final response = await getHttp().post(
-      '$_server/account/register',
-      body: jsonEncode(<String,String>{
-        'username': _username,
-        'password': _password,
-      }),
-    );
-
-    if(response.statusCode == 204) {
-      return true;
-    }
-    else if(response.statusCode == 403) {
-      return false;
-    }
-    throw Exception("Server returned an error");
+  else if(response.statusCode == 401) {
+    return false;
   }
+  throw Exception("Server returned an error");
+}
+
+Future<bool> register(String server, String username, String password) async {
+  final response = await ServerConnection.getClient().post(
+    server + '/account/register',
+    body: jsonEncode(<String,String>{
+      'username': username,
+      'password': password,
+    }),
+  );
+
+  if(response.statusCode == 204) {
+    return true;
+  }
+  else if(response.statusCode == 403) {
+    return false;
+  }
+  throw Exception("Server returned an error");
 }
