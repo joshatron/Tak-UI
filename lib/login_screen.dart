@@ -18,30 +18,30 @@ class _LoginState extends State<LoginScreen> {
 
   _tryLogin() async {
     try {
-      var result = await ServerConnection.isAuthenticated(_usernameController.text, _passwordController.text, _serverController.text);
+      ServerConnection conn = ServerConnection(_usernameController.text, _passwordController.text, _serverController.text);
+      var result = await isAuthenticated(conn);
       if(result) {
         setState(() {_loginResult = "";});
         Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => HomeScreen(ServerConnection(_usernameController.text, _passwordController.text, _serverController.text))),
+          MaterialPageRoute(builder: (context) => HomeScreen(conn)),
         );
       }
       else {
         setState(() {_loginResult = "Invalid credentials";});
       }
     } catch(err) {
-      setState(() {_loginResult = "Error conneting with server";});
+      setState(() {_loginResult = "Error connecting to server";});
     }
   }
 
   _tryRegister() async {
     try {
-      var connection = ServerConnection(_usernameController.text, _passwordController.text, _serverController.text);
-      var result = await connection.register();
+      var result = await register(_serverController.text, _usernameController.text, _passwordController.text);
 
       if(result) {
         setState(() {_loginResult = "";});
         Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => HomeScreen(connection)),
+          MaterialPageRoute(builder: (context) => HomeScreen(ServerConnection(_usernameController.text, _passwordController.text, _serverController.text))),
         );
       }
       else {
