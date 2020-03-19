@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'server.dart';
+import 'package:tak_ui/server/server_interface.dart';
+import 'server/server.dart';
 import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -18,8 +19,9 @@ class _LoginState extends State<LoginScreen> {
 
   _tryLogin() async {
     try {
-      ServerConnection conn = ServerConnection(_usernameController.text, _passwordController.text, _serverController.text);
-      var result = await isAuthenticated(conn);
+      TakServer conn = HttpsServer();
+      conn.initialize(_usernameController.text, _passwordController.text, _serverController.text);
+      var result = await conn.isAuthenticated();
       if(result) {
         setState(() {_loginResult = "";});
         Navigator.pushReplacement(context,
@@ -36,12 +38,14 @@ class _LoginState extends State<LoginScreen> {
 
   _tryRegister() async {
     try {
-      var result = await register(_serverController.text, _usernameController.text, _passwordController.text);
+      TakServer conn = HttpsServer();
+      conn.initialize(_usernameController.text, _passwordController.text, _serverController.text);
+      var result = await conn.register();
 
       if(result) {
         setState(() {_loginResult = "";});
         Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => HomeScreen(ServerConnection(_usernameController.text, _passwordController.text, _serverController.text))),
+          MaterialPageRoute(builder: (context) => HomeScreen(conn)),
         );
       }
       else {

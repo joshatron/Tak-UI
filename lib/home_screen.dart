@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'server.dart';
+import 'package:tak_ui/server/server_interface.dart';
+import 'server/server.dart';
 
 class HomeScreen extends StatelessWidget {
-  final ServerConnection _connection;
+  final TakServer _connection;
 
   HomeScreen(this._connection);
 
@@ -10,9 +11,9 @@ class HomeScreen extends StatelessWidget {
   Widget build(context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_connection.username),
+        title: Text(_connection.getUsername()),
       ),
-      body: Center(child: Text('Welcome ' + _connection.username)),
+      body: Center(child: Text('Welcome ' + _connection.getUsername())),
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
