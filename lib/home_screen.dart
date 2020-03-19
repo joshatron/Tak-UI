@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:tak_ui/server/server_interface.dart';
-import 'server/server.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:tak_ui/server/tak_server.dart';
+import 'server/https_server.dart';
 
 class HomeScreen extends StatelessWidget {
   final TakServer _connection;
@@ -14,6 +15,23 @@ class HomeScreen extends StatelessWidget {
         title: Text(_connection.getUsername()),
       ),
       body: Center(child: Text('Welcome ' + _connection.getUsername())),
+      floatingActionButton: SpeedDial(
+        animatedIcon: AnimatedIcons.menu_arrow,
+        backgroundColor: Colors.brown,
+        curve: Curves.bounceIn,
+        children: [
+          SpeedDialChild(
+            child: Icon(Icons.videogame_asset),
+            backgroundColor: Colors.brown,
+            label: 'New Game',
+          ),
+          SpeedDialChild(
+            child: Icon(Icons.person_add),
+            backgroundColor: Colors.brown,
+            label: 'New Friend',
+          ),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(

@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart' as http;
-import 'package:tak_ui/server/server_interface.dart';
+import 'package:tak_ui/server/tak_server.dart';
 
 class HttpsServer implements TakServer {
   String _username;

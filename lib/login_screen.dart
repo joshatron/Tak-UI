@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:tak_ui/server/server_interface.dart';
-import 'server/server.dart';
+import 'package:tak_ui/server/mock_server.dart';
+import 'package:tak_ui/server/tak_server.dart';
+import 'server/https_server.dart';
 import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -16,16 +17,16 @@ class _LoginState extends State<LoginScreen> {
   final _passwordFocus = FocusNode();
   final _serverFocus = FocusNode();
   var _loginResult = "";
+  TakServer takServer = MockServer();
 
   _tryLogin() async {
     try {
-      TakServer conn = HttpsServer();
-      conn.initialize(_usernameController.text, _passwordController.text, _serverController.text);
-      var result = await conn.isAuthenticated();
+      takServer.initialize(_usernameController.text, _passwordController.text, _serverController.text);
+      var result = await takServer.isAuthenticated();
       if(result) {
         setState(() {_loginResult = "";});
         Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => HomeScreen(conn)),
+          MaterialPageRoute(builder: (context) => HomeScreen(takServer)),
         );
       }
       else {
@@ -38,14 +39,13 @@ class _LoginState extends State<LoginScreen> {
 
   _tryRegister() async {
     try {
-      TakServer conn = HttpsServer();
-      conn.initialize(_usernameController.text, _passwordController.text, _serverController.text);
-      var result = await conn.register();
+      takServer.initialize(_usernameController.text, _passwordController.text, _serverController.text);
+      var result = await takServer.register();
 
       if(result) {
         setState(() {_loginResult = "";});
         Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => HomeScreen(conn)),
+          MaterialPageRoute(builder: (context) => HomeScreen(takServer)),
         );
       }
       else {
